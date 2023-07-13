@@ -33,7 +33,6 @@ async function renderApp() {
   for (let caster of Object.keys(USER_DICT)) {
     const user = USER_DICT[caster];
     const url = user.opml_url;
-    console.log("url", url);
     try {
       const response = await fetchSomething(url);
       const my_parser = new DOMParser();
@@ -59,7 +58,7 @@ async function renderApp() {
         }
       }
       // sort by count
-      const sortedPods = Object.keys(COUNT_BY_PODCASTS).sort((a, b) => COUNT_BY_PODCASTS[b] - COUNT_BY_PODCASTS[a]);
+      const sortedPods = Object.keys(COUNT_BY_PODCASTS).sort((a, b) => COUNT_BY_PODCASTS[b].count - COUNT_BY_PODCASTS[a].count);
       // render them again
       const podlist_el = document.getElementById("podlist");
       podlist_el.innerHTML = "";
