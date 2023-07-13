@@ -27,7 +27,6 @@ async function renderApp() {
     }
   }
   // sort by count
-  COUNT_BY_PODCASTS["Connected"] = 3;
   const sortedPods = Object.keys(COUNT_BY_PODCASTS).sort((a, b) => COUNT_BY_PODCASTS[b] - COUNT_BY_PODCASTS[a]);
   // render them again
   const podlist_el = document.getElementById("podlist");
