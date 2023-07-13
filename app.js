@@ -9,7 +9,7 @@ async function renderApp() {
   // fetch all replies to a given cast with searchcaster
   const loading_el = document.getElementById("loading-status");
   loading_el.innerHTML = "Loading Farcaster data from Searchcaster (this takes ~20 seconds)...";
-  const parentCastURL = `https://searchcaster.xyz/api/search?merkleRoot=0xf0815b49067c35b4a23e4f2e78c118a330d8cd7c`;
+  const parentCastURL = `https://searchcaster.xyz/api/search?merkleRoot=0x7bd4ceb2843cfe73060d1d4e729119de96a40f78`;
   const resp = await fetchSomething(parentCastURL);
   loading_el.innerHTML = "Grabbing podcast data..."
   const parentCast = JSON.parse(resp);
