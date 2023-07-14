@@ -52,16 +52,25 @@ async function renderApp() {
             count: 1,
             users: [user.username],
           };
-        } else {
+        } else if (COUNT_BY_PODCASTS[title].users.indexOf(user.username) === -1) {
           COUNT_BY_PODCASTS[title] = {
             count: COUNT_BY_PODCASTS[title].count + 1,
             users: [...COUNT_BY_PODCASTS[title].users, user.username],
           };
         }
         // update podcast directory details
-        PODCAST_DICT[title] = {
-          rss_url: podcast.getAttribute("xmlUrl"),
-          site_url: podcast.getAttribute("htmlUrl"),
+        if (!PODCAST_DICT[title]) {
+          PODCAST_DICT[title] = {
+            rss_url: podcast.getAttribute("xmlUrl"),
+            site_url: podcast.getAttribute("htmlUrl"),
+          }
+        } else {
+          if (podcast.getAttribute("xmlUrl") && !PODCAST_DICT[title].rss_url) {
+            PODCAST_DICT[title].rss_url = podcast.getAttribute("xmlUrl");
+          }
+          if (podcast.getAttribute("htmlUrl") && !PODCAST_DICT[title].site_url) {
+            PODCAST_DICT[title].site_url = podcast.getAttribute("htmlUrl");
+          }
         }
       }
       // sort by count
@@ -71,10 +80,10 @@ async function renderApp() {
       podlist_el.innerHTML = "";
       for (let pod of sortedPods) {
         const li = document.createElement("li");
-        li.classList = "flex flex-row space-x-2 p-3 bg-white shadow rounded-lg group-hover:text-blue-200"
+        li.classList = "flex flex-row items-center space-x-2 p-3 bg-white shadow rounded-lg group-hover:text-blue-200"
         const user_images = COUNT_BY_PODCASTS[pod].users.map(user => `<img class="w-5 h-5 rounded-full" src="${USER_DICT[user].avatar_url}" />`).join("");
-        const rss_link = `<a target="_blank" href="${PODCAST_DICT[pod].rss_url}" class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">RSS</a>`
-        const site_link = `<a target="_blank" href="${PODCAST_DICT[pod].site_url}" class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">Website</a>`
+        const rss_link = PODCAST_DICT[pod].rss_url ? `<a target="_blank" href="${PODCAST_DICT[pod].rss_url}" class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">RSS</a>` : "<span />";
+        const site_link = PODCAST_DICT[pod].site_url ? `<a target="_blank" href="${PODCAST_DICT[pod].site_url}" class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">Website</a>` : '<span />'
         li.innerHTML = `<span>${pod}: ${COUNT_BY_PODCASTS[pod].count} </span>${rss_link}${site_link}${user_images}`;
         podlist_el.appendChild(li);
       }
