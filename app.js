@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", renderApp);
 
 const COUNT_BY_PODCASTS = {};
 const USER_DICT = {};
+const PODCAST_DICT = {}
 
 async function renderApp() {
   // fetch all replies to a given cast with searchcaster
@@ -37,24 +38,30 @@ async function renderApp() {
       const response = await fetchSomething(url);
       const my_parser = new DOMParser();
       const pods = my_parser.parseFromString(response, "text/xml");
-      const podsArray = Array.from(pods.querySelectorAll("outline"));
-      const titles = podsArray.map(pod => pod.getAttribute("title"));
+      const podcasts = Array.from(pods.querySelectorAll("outline"));
+      const titles = podcasts.map(pod => pod.getAttribute("title"));
 
-      // update user podcasts
+      // update user podcasts (not used right now, but could be useful later)
       USER_DICT[user.username].podcasts = titles;
-      console.log(USER_DICT)
-      // update overall count
-      for (let title of titles) {
+
+      for (let podcast of podcasts) {
+        const title = podcast.getAttribute("title");
+        // update overall count
         if (!COUNT_BY_PODCASTS[title]) {
           COUNT_BY_PODCASTS[title] = {
             count: 1,
             users: [user.username],
           };
         } else {
-          COUNT_BY_PODCASTS[title]  = {
+          COUNT_BY_PODCASTS[title] = {
             count: COUNT_BY_PODCASTS[title].count + 1,
             users: [...COUNT_BY_PODCASTS[title].users, user.username],
           };
+        }
+        // update podcast directory details
+        PODCAST_DICT[title] = {
+          rss_url: podcast.getAttribute("xmlUrl"),
+          site_url: podcast.getAttribute("htmlUrl"),
         }
       }
       // sort by count
@@ -64,9 +71,11 @@ async function renderApp() {
       podlist_el.innerHTML = "";
       for (let pod of sortedPods) {
         const li = document.createElement("li");
-        li.classList = "flex flex-row space-x-2"
+        li.classList = "flex flex-row space-x-2 p-3 bg-white shadow rounded-lg group-hover:text-blue-200"
         const user_images = COUNT_BY_PODCASTS[pod].users.map(user => `<img class="w-5 h-5 rounded-full" src="${USER_DICT[user].avatar_url}" />`).join("");
-        li.innerHTML = `<span>${pod}: ${COUNT_BY_PODCASTS[pod].count} </span>${user_images}`;
+        const rss_link = `<a target="_blank" href="${PODCAST_DICT[pod].rss_url}" class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">RSS</a>`
+        const site_link = `<a target="_blank" href="${PODCAST_DICT[pod].site_url}" class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">Website</a>`
+        li.innerHTML = `<span>${pod}: ${COUNT_BY_PODCASTS[pod].count} </span>${rss_link}${site_link}${user_images}`;
         podlist_el.appendChild(li);
       }
     } catch (err) {

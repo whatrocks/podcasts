@@ -11,18 +11,22 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fast-xml-parser/4.2.5/fxparser.min.js.map"></script>
 </head>
 
-<body>
+<body class="bg-indigo-50">
   <div class="flex flex-col items-center h-screen space-y-2">
-    <h1 class="text-3xl mt-4">top podcasts among farcasters</h1>
-    <h2 id="loading-status"></h2>
-    <div id="podlist"></div>
-    <p><b>To add your podcasts to this page:</b></p>
-    <ol>
-      <li>Export your OPML XML file from your podcast player</li>
-      <li>Create a public Github gist with the contents of this file</li>
-      <li>Reply to <a href="https://warpcast.com/whatrocks/0x7bd4ce" target="_blank">this cast</a> on Farcaster with the
-        "raw" link from GitHub Gist (must be the raw one)</li>
-    </ol>
+    <h1 class="mt-2 inline-block text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">Top
+      Podcasts among Farcasters</h1>
+    <h2 class="mt-2 text-lg text-slate-700 dark:text-slate-400" id="loading-status"></h2>
+    <div id="podlist" class="space-y-2"></div>
+    <div class="bg-slate-50 rounded-lg p-6 dark:bg-slate-800 dark:highlight-white/5">
+      <p><b>To add your podcasts to this page:</b></p>
+      <ol>
+        <li>Export your OPML XML file from your podcast player</li>
+        <li>Create a public Github gist with the contents of this file</li>
+        <li>Reply to <a class="text-blue-600 dark:text-blue-500 hover:underline" href="https://warpcast.com/whatrocks/0x7bd4ce" target="_blank">this cast</a> on Farcaster with
+          the
+          "raw" link from GitHub Gist (must be the raw one)</li>
+      </ol>
+    </div>
   </div>
   <script defer src="./app.js"></script>
 </body>
