@@ -12,20 +12,22 @@ const USER_DICT = {};
 const PODCAST_DICT = {};
 
 function parseOPML(opml) {
-  return Array.from(opml.querySelectorAll("outline")).map((outline) => {
-    const opml_type = opml.getElementsByTagName("title")[0].innerHTML;
-    const parsed = {
-      title:
-        opml_type === POCKET_CASTS
-          ? outline.getAttribute("text")
-          : outline.getAttribute("title"),
-      rss_url: outline.getAttribute("xmlUrl"),
-    };
-    if (opml_type === OVERCAST) {
-      parsed["site_url"] = outline.getAttribute("htmlUrl");
-    }
-    return parsed;
-  });
+  return Array.from(opml.querySelectorAll("outline"))
+    .map((outline) => {
+      const opml_type = opml.getElementsByTagName("title")[0].innerHTML;
+      const parsed = {
+        title:
+          opml_type === POCKET_CASTS
+            ? outline.getAttribute("text")
+            : outline.getAttribute("title"),
+        rss_url: outline.getAttribute("xmlUrl"),
+      };
+      if (opml_type === OVERCAST) {
+        parsed["site_url"] = outline.getAttribute("htmlUrl");
+      }
+      return parsed;
+    })
+    .filter((pod) => pod.rss_url);
 }
 function parsePlist(plist) {
   return Array.from(plist.querySelectorAll("dict"))
