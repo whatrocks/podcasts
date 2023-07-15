@@ -2,17 +2,29 @@
 
 document.addEventListener("DOMContentLoaded", renderApp);
 
+// constants
+const POCKET_CASTS = "Pocket Casts Feeds";
+const OVERCAST = "Overcast Podcast Subscriptions";
+
+// state
 const COUNT_BY_PODCASTS = {};
 const USER_DICT = {};
 const PODCAST_DICT = {};
 
 function parseOPML(opml) {
   return Array.from(opml.querySelectorAll("outline")).map((outline) => {
-    return {
-      title: outline.getAttribute("title"),
+    const opml_type = opml.getElementsByTagName("title")[0].innerHTML;
+    const parsed = {
+      title:
+        opml_type === POCKET_CASTS
+          ? outline.getAttribute("text")
+          : outline.getAttribute("title"),
       rss_url: outline.getAttribute("xmlUrl"),
-      site_url: outline.getAttribute("htmlUrl"),
     };
+    if (opml_type === OVERCAST) {
+      parsed["site_url"] = outline.getAttribute("htmlUrl");
+    }
+    return parsed;
   });
 }
 function parsePlist(plist) {
@@ -41,9 +53,8 @@ function parsePlist(plist) {
 function parseXML(xml) {
   const my_parser = new DOMParser();
   const xml_obj = my_parser.parseFromString(xml, "text/xml");
-  return xml_obj.documentElement.localName === "opml"
-    ? parseOPML(xml_obj)
-    : parsePlist(xml_obj);
+  const doc_type = xml_obj.documentElement.localName;
+  return doc_type === "opml" ? parseOPML(xml_obj) : parsePlist(xml_obj);
 }
 
 async function renderApp() {
@@ -135,10 +146,10 @@ async function renderApp() {
           .join("");
         const rss_link = PODCAST_DICT[pod].rss_url
           ? `<a target="_blank" href="${PODCAST_DICT[pod].rss_url}" class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">RSS</a>`
-          : "<span />";
+          : "";
         const site_link = PODCAST_DICT[pod].site_url
           ? `<a target="_blank" href="${PODCAST_DICT[pod].site_url}" class="bg-purple-100 text-purple-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">Website</a>`
-          : "<span />";
+          : "";
         li.innerHTML = `<span>${pod}: ${COUNT_BY_PODCASTS[pod].count} </span>${rss_link}${site_link}${user_images}`;
         podlist_el.appendChild(li);
       }
